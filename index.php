@@ -1,91 +1,77 @@
-<?php
-//by harrison south
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-require 'Slim/Slim.php';
-\Slim\Slim::registerAutoloader();
-
-$app = new \Slim\Slim();
-//GET http://harrisonsouth.co.uk/blip/api/servers
-$app->get('/servers', 'getServers');
-
-//POST http://harrisonsouth.co.uk/blip/api/server
-
-/**
-* Use this to add in the inital values for a server, you should expect to have at the very least the name of the server,
-* but there is the possibility to have IP Address (ip), Location (location), HDD Size Available (hdsize), RAM Size Available (ramsize),
-* these should all be accessed like $body['ip'].
-*/
-
-$app->post('/server', function() use ($app){
-	$server = array(); //array to hold server details
-	
-
-	$request = $app->request();
-	$body = $request->getBody(); //equivalent to $_POST 
-	$body = json_decode($body, true); //convert into an array
-
-	//check if name is in request - this is required therefore an error if not sent
-	if(isset($body['name'])){
-		$server['name'] = $body['name']; //put name in array
-	} else {
-		$app->response->setStatus(400); //send a BAD REQUEST status
-		exit;
-	}
-	
-	//this is not a required field right now so if it does not exist then ignore it.
-	if(isset($body['location'])){
-		$server['location'] = $body['location'];
-	}
-	
-	if(isset($body['ip'])){
-		$server['ip'] = $body['ip'];
-	}
-	
-	if(isset($body['hdsize'])){
-		$server['hd_size'] = $body['hdsize'];
-	}
-	if(isset($body['ramsize'])){
-		$server['ram_size'] = $body['ramsize'];
-	}
-	
-	echo $server['location'];
-});
-
-$app->run();
-
-function getServers(){
-$sql = "SELECT * FROM server";
-$mysqli = getMysqli();
-try {
-	$myArray = array();
-	$results = $mysqli->query($sql);
-	while($row = $results->fetch_array(MYSQL_ASSOC)) {
-		$myArray[] = $row;
-	}
-	echo '{"servers": ' . json_encode($myArray) . '}';
-} catch(Exception $e){
-	echo '{"error":{"text":' . $e->getMessage() . '}}';
-}
-
-}
-function addServer(){
-$app->response->setStatus(400);
-$app= \Slim\Slim::getInstance();
-$request = $app->request();
-$body = $request->getBody();
-$event = json_decode($body);
-var_dump($body);
-
-
-}
-function getMysqli(){
-
-require 'mysqli.php';
-return $mysqli;
-
-}
-
-
-
+<?php 
+include('emptyheader.php');
 ?>
+<style>
+#container {
+    clear: both;
+    margin: 0 auto;
+    max-width: 832px;
+    text-align:center; 
+}
+.gapabove {
+  margin-top: 10px;
+}
+.navbar {
+  display: none;
+}
+.item {
+	padding-top:35px;
+	padding-bottom:35px;
+    width: 450px; 
+    display:inline-block; 
+	font-family: Jura;
+	font-size: 18px;
+	font-style: normal;
+	font-variant: normal;
+	font-weight: 400;
+	line-height: 20px;
+}​​​​​​​
+
+.btn { 
+  font-size: 18px #FF0000;  
+  border: 1px solid #FF0000;  
+  border-radius: 4px ;  
+} 
+
+.btn-default {  
+  color: white;  
+  background-color: #FF0000;  
+  border-color: #FF0000;  
+} 
+
+.btn-default:hover, .btn-default:focus, .btn-default:active, .btn-default.active, .open .dropdown-toggle.btn-default {  
+color: #FF0000;  
+background-color: white;  
+border-color: #FF0000;  
+}  
+</style>
+<link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Jura" />
+
+<div class="container gapabove">
+ 
+  <div id="container" >
+  
+  <img class="item" src="images/logobright.png" alt="blip logo" width="128" height="250"> 
+  
+  <p class="item">Blip is a unique Debian server monitoring system that will collate data about your server, 
+  including bandwidth, load, and storage. It then cleverly uploads it to a database and right onto the 
+  devices you use the most, including phone and desktop, allowing you to monitor your server from anywhere in the world.
+  <br>
+  <br>
+  A simple setup script will install everything you need to be up and running in mere seconds!
+  </p>
+ 
+  
+  <form action="setup_blip.sh" method="get">
+    <input class="btn btn-default btn-lg" type="submit" value="Download" 
+         name="Submit" id="btn" />
+</form>
+
+
+<a class="item guide" href="instr.php" > installation guide </a>
+<a class="item guide" href="loginpage.php"> login </a>
+
+  
+  </div>
+  </div>
+ 

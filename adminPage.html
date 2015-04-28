@@ -1,0 +1,415 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Administrator Settings </title>
+		<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
+		<script src="http://codeorigin.jquery.com/jquery-1.10.2.min.js"></script>
+		<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+		<script src="dist/sweetalert-master/dist/sweetalert.min.js"></script> 
+		<link rel="stylesheet" type="text/css" href="dist/sweetalert-master/dist/sweetalert.css">
+		<link rel="icon" type="image/png" href="favicon.ico">
+
+		<style>
+		
+		body
+		{
+			background: url("darkBackground3.jpg") fixed center;
+		}
+		
+		#wrapper
+		{
+			min-width: 500px;
+			max-width: 100%;
+		}
+		
+		
+		
+		/*LOGO.......................................*/
+		
+		#logo
+		{
+			max-width: 100%;
+			display: block;
+			margin-left: auto;
+			margin-right: auto;
+			width: 300px;
+			margin-top: -50px;
+		}
+		
+		#navBarLogo
+		{
+			margin-top: -35px;
+			width: 150px;
+		}
+		
+		
+		/*NAVBAR.....................................*/
+		
+		#navBar
+		{
+			display: block;
+			margin-left: auto;
+			margin-right: auto;
+			max-width: 80%;
+		}
+		
+		/*BUTTONS....................................*/
+		
+		#homeBtn
+		{
+			position: relative;
+			margin-right: 0 auto;
+			margin-left: 65%;
+			margin-bottom: 2%;
+		}
+		
+		#adminBtn
+		{
+			position: relative;
+			margin-right: 0 auto;
+			margin-left: 0 auto;
+			margin-bottom: 2%;
+			
+		}
+		
+		#logoutBtn
+		{
+			position: relative;
+			margin-right: 0 auto;
+			margin-left: 0 auto;
+			margin-bottom: 2%;
+
+		}
+		
+		#submitNewUserBtn
+		{
+			display: none;
+			margin: 10px 10px 10px 10px;
+		}
+		
+		#saveBtn
+		{
+			display: block;
+			margin-left: auto;
+			margin-right: auto;
+		}
+		
+		
+		
+		/*TABLE.......................................*/
+		
+		#table
+		{
+			max-width: 60%;
+			margin-left: auto;
+			margin-right: auto;
+			text-align: center;
+			background-color: white;
+			//box-shadow: 10px 10px 5px #FFFF00;
+		}
+		
+		#table th
+		{
+			text-align: center;
+			vertical-align: middle;
+		}
+		
+		
+		
+		/*OTHER OBJECTS...............................*/
+		
+		.input-values {
+			display: none;
+			width: 150px;
+		}
+		</style>
+
+		<script>
+
+		var servers;
+		var users;
+		var checkboxes =[];
+		var checkboxIndex = 0;
+		var checked;
+
+			function createServerRows(){
+
+				$.ajax({
+					url : "api/servers",
+					method : "GET",
+					success : function(data){
+						servers = data;
+						getUsers();
+					}
+				});
+
+			} 
+			function getUsers(){
+				$.ajax({
+					url  : "api/users",
+					method : "GET",
+					success : function(data){
+						users = data;
+						printUsersRow();
+						printServers();
+						getChanges();
+					}
+				});
+			}
+			function printUsersRow(){
+
+				$(users).each(function(index){
+					$('<th>' + this.name + '</th>').insertBefore("#added-column");
+				});
+
+			}
+			function printServers(){
+				$(servers).each(function(index){
+					$('#table').append('<tr><th>'+this.name+'</th>' + returnUserCheckboxes(this) + '');
+
+				});
+				$("#table tr:gt(0)").append("<td><input class='disabled-cb' type='checkbox' value='' disabled></td>");
+			}
+			function returnUserCheckboxes(server){
+				var code = "";
+				$(users).each(function(index){
+					code += '<td><div id="cbDisabled" class="checkbox disbaled"><label id="hs-'+checkboxIndex+'"><input id="'+server.server_id+'-'+this.alias+'" class="disabled-cb" type="checkbox"></label></div></td>';
+					checkboxIndex++;
+				});
+				return code;
+			}
+
+		</script>
+	</head>
+	
+	<body>
+		<img id="logo" alt="Blip Logo" src="LogoBright.png"></img>
+		<div id="wrapper">
+			<div id="header">
+				<div id="navBar">
+					<nav class="navbar navbar-default">
+					  <div class="container-fluid">
+						<!-- Brand and toggle get grouped for better mobile display -->
+						<div class="navbar-header">
+							<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+								<span class="sr-only">Toggle navigation</span>
+								<span class="icon-bar"></span>
+								<span class="icon-bar"></span>
+								<span class="icon-bar"></span>
+							</button>
+							<a class="navbar-brand" href="">
+								<img id="navBarLogo" alt="Blip Logo" src="LogoBright.png"></img>
+							</a>
+						</div>
+
+						<!-- Collect the nav links, forms, and other content for toggling -->
+						<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+						  <ul class="nav navbar-nav navbar-right">
+							<li>
+								<a href="#">Home</a>
+							</li>
+							<li class="dropdown active">
+							  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Admin <span class="caret"></span></a>
+							  <ul class="dropdown-menu" role="menu">
+								<li><a href="#">Action</a></li>
+								<li><a href="#">Another action</a></li>
+								<li><a href="#">Something else here</a></li>
+								<li class="divider"></li>
+								<li><a href="#">Separated link</a></li>
+								<li class="divider"></li>
+								<li><a href="#">One more separated link</a></li>
+							  </ul>
+							</li>
+							<li>
+								<a href="#">Logout</a>
+							</li>
+						  </ul>
+						</div><!-- /.navbar-collapse -->
+					  </div><!-- /.container-fluid -->
+					</nav>
+				</div>
+			</div>
+			
+			<div id="body">
+				<table id="table" class="table table-hover table-striped table-responsive table-bordered">
+					<tr id="top-row">
+						<th>Server/Usernames</th>
+						<th id="added-column" class="new-user">
+							<form id="new-user">
+								<div class="form-group">
+									<input type="text" name="alias" class="form-control input-values" id="inputAlias" placeholder="Enter Allies">
+									<input type="text" name="name" class="form-control input-values" id="inputName" placeholder="Enter First Name">
+									<input type="text" name="location" class="form-control input-values" id="inputLocation" placeholder="Enter Location">
+									<input type="text" name="phone" class="form-control input-values" id="inputPhone"  placeholder="Enter Phone">
+									<input type="password" name="password" class="form-control input-values" id="inputPassword"  placeholder="Enter Password">
+									<button id="submitNewUserBtn" class="btn btn-success" type="submit">Submit</button>
+								</div>
+							</form>
+							<button id="addNewUserBtn" class="btn btn-success" type="submit">+</button>
+						</th>
+					</tr>
+					
+				</table>
+			</div>
+			
+			<button id="saveBtn" class="btn btn-success" type="submit">Save Changes!</button>
+			
+			<div id="footer">
+			</div>
+				
+		</div>
+		<script>
+			function enable_cb() {
+				this.preventDefault();
+				if (this.checked) {
+					$(".disabled-cb").removeAttr("disabled");
+				} else {
+					$(".checkbox disabled").attr("disabled", true);
+				}
+			}
+				function add_click(event){
+						event.preventDefault();
+						$('#inputAlias').show(500);
+						$('#inputName').show(500);
+						$('#inputLocation').show(500);
+						$('#inputPassword').show(500);
+						$('#inputPhone').show(500);
+						$('#submitNewUserBtn').show(500);
+						$('#addNewUserBtn').hide(500);
+						
+						$('#submitNewUserBtn').on("click", function(event){
+							var form = document.getElementById("new-user");
+							event.preventDefault();
+
+							var name = form.elements['name'].value;
+							var location = form.elements['location'].value;
+							var password = form.elements['password'].value;
+							var phone = form.elements['phone'].value;
+							var alias = form.elements['alias'].value;
+							//swal("Success!", "New user addded!", "success")
+
+							addUser();
+					
+							
+						});
+				}
+				function incrementUser(name){
+							$(".disabled-cb").removeAttr("disabled");
+							$(".checkbox disabled").attr("disabled", true);
+							
+							$(".new-user").empty();
+							$("#added-column").html(name);
+							$(".new-user").removeClass("new-user");
+							$("#added-column").removeAttr("id");
+							
+														
+							$("#table tr:first").append("<th id='added-column' class='new-user'><form id='new-user' class='new-user'><div class='form-group'><input type='text' name='alias' class='form-control input-values' id='inputAlias' placeholder='Enter Allies'><input type='text' name='name' class='form-control input-values' id='inputName' placeholder='Enter Name'><input type='text' name='location' class='form-control input-values' id='inputLocation' placeholder='Enter Location'><input type='text' name='phone' class='form-control input-values' id='inputPhone' placeholder='Enter Phone'><input type='password' name='password' class='form-control input-values' id='inputPassword' placeholder='Enter Password'><button id='submitNewUserBtn' class='btn btn-success' type='submit'>Submit</button></div></form><button id='addNewUserBtn' class='btn btn-success' type='submit'>+</button></th>");
+							$("#table tr:gt(0)").append("<td><input class='disabled-cb' type='checkbox' value='' disabled></td>");
+							$('#addNewUserBtn').on("click", add_click);
+							
+				}
+				function addUser(){
+					console.log(formToJSON());
+					$.ajax({
+						url : 'api/users',
+						method : 'POST',
+						contentType: 'application/json',
+						data : formToJSON(),
+						dataType: "json",
+						success : function(data) {
+							alert(data);
+							swal("Success!", "New user addded!", "success")
+							incrementUser(form.name);
+						},
+						error : function(data){
+							console.log(data);
+						}
+
+					})
+
+				}
+				function getChanges(){
+					$.ajax({
+						url : "api/roles",
+						method : "get",
+						success : function(data){
+							checked = data;
+
+							$(checked).each(function(index){
+								$('#'+this.server_id+'-'+this.user_alias).attr("checked", true);
+							});
+						}
+					});
+				}
+				//getChanges();
+				var values1;
+				function saveChanges(){
+					values = []
+					for(i = 0; i < checkboxIndex; i++){
+						if($('#hs-'+i+' :input').is(" :checked")){
+							values.push(true);
+						} else {
+
+							values.push(false);
+						}
+					}
+					var server_values = Array();
+					
+					for(i = 0; i < checkboxIndex; i++){
+						if(values[i]){
+							var json = $('#hs-'+i+' :input').attr('id');
+							var lolvalues = json.split('-');
+							var server_value = {};
+							var id = lolvalues[0];
+							var alias = lolvalues[1];
+							server_value["server_id"] = id;
+							server_value["user_alias"] = alias;
+							console.log(server_value);
+							server_values.push(server_value);
+							
+						}
+
+					}	
+					console.log(server_values);
+					if(server_values.length > 0){
+						$.ajax({
+							url : 'api/roles',
+							method : 'POST',
+							dataType : 'json',
+							contentType: 'application/json',
+							data : JSON.stringify(server_values),
+							success : function(data){
+								swal("Succes!", "Your user assignments have been updated!", "success");
+								console.log(data);
+							},
+							error : function(data){
+								console.log(data);
+							}
+						})
+					}
+				}
+
+				$('#addNewUserBtn').on("click", add_click);
+				createServerRows();
+
+				function formToJSON(){
+					return JSON.stringify({
+						"alias" : $('#inputAlias').val(),
+						"name" : $('#inputName').val(),
+						"location" : $('#inputLocation').val(),
+						"phone" : $('#inputPhone').val(),
+						"password" : $('#inputPassword').val()
+					});
+				}
+				function checkboxToJSON(batman){
+					data = batman.split("-");
+					return JSON.stringify({
+						"server_id" : data[0],
+						"user_alias" : data[1]
+					});
+				}
+				$('#saveBtn').on("click", saveChanges);
+		</script>
+	</body>
+</html>
